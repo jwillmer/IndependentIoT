@@ -1,0 +1,14 @@
+[Unit]
+Description=ePapper Refresh Service
+After=network.target
+
+[Service] 
+ExecStart=/usr/bin/python3 -u output.py 15
+WorkingDirectory=/home/pi/epaper/script
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
