@@ -1,10 +1,10 @@
 [Unit]
-Description=ePapper Refresh Service
+Description=Update ePaper on btn press
 After=network.target
 
 [Service] 
-ExecStart=/usr/bin/python3 -u epaper.py 15
-WorkingDirectory=/home/pi/epaper/script
+ExecStart=/usr/bin/python3 -u updateScreen.py
+WorkingDirectory=/home/pi/scripts/scripts
 StandardOutput=inherit
 StandardError=inherit
 Restart=always

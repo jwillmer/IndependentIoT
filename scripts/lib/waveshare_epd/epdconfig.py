@@ -81,7 +81,8 @@ class RaspberryPi:
         self.GPIO.output(self.RST_PIN, 0)
         self.GPIO.output(self.DC_PIN, 0)
 
-        self.GPIO.cleanup()
+        # Other scripts use GPIO to subscribe to events and this line will break them
+        #self.GPIO.cleanup()
 
 
 class JetsonNano:
