@@ -17,8 +17,8 @@ from signal import signal, SIGINT
 from data import Data
 
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
-#logging.basicConfig(level=logging.WARNING, format="%(asctime)s:%(levelname)s:%(message)s")
+#logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
 
 # Init button
 buttonPin = 13
@@ -43,30 +43,30 @@ def writePowerLevels(draw, title, voltage, power, current):
     draw.text((0, current_height+10), title, font = font18, fill = 0)
     current_height = current_height + 28
 
-    writeInfo(draw, 'Voltage:', "{:6.3f}V".format(voltage))
-    writeInfo(draw, 'Power:', "{:9.6f}W".format(power))
-    writeInfo(draw, 'Current:', "{:9.6f}A".format(current))
+    writeInfo(draw, 'Voltage:', "{:4.3f}V".format(voltage))
+    writeInfo(draw, 'Current:', "{:5.2f}mA".format(current))
+    writeInfo(draw, 'Power:', "{:4.3f}W".format(power))
 
 def emptyThread():
     logging.info("emptyThread running")
 
 def buttonPressed(channel):
-    logging.info("button press detected")
+    logging.info(">> button press detected!")
     updateScreen()
 
 def updateScreen():
-    logging.info(">> updateScreen")
+    logging.info(">> updating screen")
     global current_height
-
-    logging.info("clear screen")
-    epd = epd2in9.EPD()
-    MAX_W, MAX_H = epd.width, epd.height   
-    epd.init(epd.lut_full_update)   
 
     logging.info("collect data")
     data = Data()
 
-    logging.info("write data")
+    logging.info("clear screen")
+    epd = epd2in9.EPD()
+    MAX_W, MAX_H = epd.width, epd.height   
+    epd.init(epd.lut_full_update)      
+
+    logging.info("write data to screen")
     image = Image.new('1', (epd.width, epd.height), 255)    
     draw = ImageDraw.Draw(image)    
     
@@ -85,7 +85,7 @@ def updateScreen():
     epd.display(epd.getbuffer(image))
     epd.sleep()
     current_height=0  
-    logging.info("<< updateScreen")  
+    logging.info("<< screen updated")  
 
 def handler(signal_received, frame):
     GPIO.cleanup()
@@ -98,7 +98,7 @@ def main():
     thread = threading.Thread(target=emptyThread)
     thread.start()
 
-    logging.info(">> listening for button press")
+    logging.info(">> listening for button press..")
     GPIO.setmode(GPIO.BCM) 
     GPIO.setup(buttonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)     
     GPIO.add_event_detect(buttonPin,GPIO.RISING,callback=buttonPressed) 

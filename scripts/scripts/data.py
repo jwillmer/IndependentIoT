@@ -21,7 +21,9 @@ class PowerLevel:
 
 
 class Data:
-    def __init__(self):
+    def __init__(self):       
+         # Get first power levels before we activate other sensors
+        self.powerLevel1, self.powerLevel2, self.powerLevel3, self.powerLevel4 = getPowerLevels()
         self.ip = socket.gethostbyname(socket.gethostname())
         self.timestamp = time.localtime()
         self.time = time.strftime('%H:%M:%S', self.timestamp)
@@ -29,10 +31,8 @@ class Data:
         self.uptime = time.strftime('%H:%M:%S', time.localtime(uptime()))
         self.connectionStatus = isOnline()
         self.temp, self.humidity = getTempAndHumidityData()
-        self.powerLevel1, self.powerLevel2, self.powerLevel3, self.powerLevel4 = getPowerLevels()
 
 def getPowerLevels():    
-    # Init power hat
     i2c_bus = board.I2C()
     
     ina1 = INA219(i2c_bus,addr=0x40)
@@ -56,11 +56,12 @@ def getPowerLevels():
     ina4.shunt_adc_resolution = ADCResolution.ADCRES_12BIT_32S
     ina4.bus_voltage_range = BusVoltageRange.RANGE_16V
 
-    powerLevel1 = PowerLevel("Solar", ina1.bus_voltage, ina1.power, ina1.current)       
+    powerLevel1 = PowerLevel("Pi", ina1.bus_voltage, ina1.power, ina1.current)       
     powerLevel2 = PowerLevel("Battery", ina2.bus_voltage, ina2.power, ina2.current)
-    powerLevel3 = PowerLevel("Pi", ina3.bus_voltage, ina3.power, ina3.current)
+    powerLevel3 = PowerLevel("Solar", ina3.bus_voltage, ina3.power, ina3.current)
     powerLevel4 = PowerLevel("Undefined", ina4.bus_voltage, ina4.power, ina4.current)
-
+    
+    i2c_bus.deinit()
     return powerLevel1, powerLevel2, powerLevel3, powerLevel4
 
 
