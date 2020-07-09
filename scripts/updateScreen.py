@@ -37,12 +37,29 @@ def writeInfo(draw, title, value):
     draw.text((MAX_W - w, current_height), value, font = font14, fill = 0)
     current_height = current_height + 14
 
-
-def writePowerLevels(draw, title, voltage, power, current):
+def writeTitleInfo(draw, title, value = ""):
     global current_height
-    draw.text((0, current_height+10), title, font = font18, fill = 0)
-    current_height = current_height + 28
 
+    current_height = current_height + 10
+    draw.text((0, current_height), title, font = font18, fill = 0)
+
+    if len(value) > 1:
+        w, h = draw.textsize(value, font=font14)
+        draw.text((MAX_W - w, current_height + 4), value, font = font14, fill = 0)
+    
+    current_height = current_height + 18
+
+
+def writePowerLevels(draw, title, voltage, power, current, shunt_voltage):
+    global current_height
+    titleValue = ""
+
+    if title == "Battery":
+        percent = int(((voltage + shunt_voltage) * 100) - 320)
+        percent = 0 if percent < 0 else percent 
+        titleValue = "{0}%".format(percent)
+
+    writeTitleInfo(draw, title, titleValue)
     writeInfo(draw, 'Voltage:', "{:4.3f}V".format(voltage))
     writeInfo(draw, 'Current:', "{:5.2f}mA".format(current))
     writeInfo(draw, 'Power:', "{:4.3f}W".format(power))
@@ -77,9 +94,9 @@ def updateScreen():
     writeInfo(draw, 'Temp:', "{:.2f}C".format(data.temp))
     writeInfo(draw, 'Humidity:', "{:.2f}%".format(data.humidity))
     
-    writePowerLevels(draw, data.powerLevel1.title, data.powerLevel1.voltage, data.powerLevel1.power, data.powerLevel1.current)   
-    writePowerLevels(draw, data.powerLevel2.title, data.powerLevel2.voltage, data.powerLevel2.power, data.powerLevel2.current)   
-    writePowerLevels(draw, data.powerLevel3.title, data.powerLevel3.voltage, data.powerLevel3.power, data.powerLevel3.current)   
+    writePowerLevels(draw, data.powerLevel1.title, data.powerLevel1.voltage, data.powerLevel1.power, data.powerLevel1.current, data.powerLevel1.shunt_voltage)   
+    writePowerLevels(draw, data.powerLevel2.title, data.powerLevel2.voltage, data.powerLevel2.power, data.powerLevel2.current, data.powerLevel2.shunt_voltage)   
+    writePowerLevels(draw, data.powerLevel3.title, data.powerLevel3.voltage, data.powerLevel3.power, data.powerLevel3.current, data.powerLevel3.shunt_voltage)   
     
     image = image.transpose(Image.ROTATE_180) 
     epd.display(epd.getbuffer(image))

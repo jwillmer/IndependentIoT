@@ -13,11 +13,12 @@ import csv
 import requests
 
 class PowerLevel:
-    def __init__(self, title, voltage, power, current):
+    def __init__(self, title, voltage, power, current, shunt_voltage):
         self.title = title
         self.voltage = voltage
         self.power = power
         self.current = current
+        self.shunt_voltage = shunt_voltage
 
 
 class Data:
@@ -56,10 +57,10 @@ def getPowerLevels():
     ina4.shunt_adc_resolution = ADCResolution.ADCRES_12BIT_32S
     ina4.bus_voltage_range = BusVoltageRange.RANGE_16V
 
-    powerLevel1 = PowerLevel("Pi", ina1.bus_voltage, ina1.power, ina1.current)       
-    powerLevel2 = PowerLevel("Battery", ina2.bus_voltage, ina2.power, ina2.current)
-    powerLevel3 = PowerLevel("Solar", ina3.bus_voltage, ina3.power, ina3.current)
-    powerLevel4 = PowerLevel("Undefined", ina4.bus_voltage, ina4.power, ina4.current)
+    powerLevel1 = PowerLevel("Pi", ina1.bus_voltage, ina1.power, ina1.current, ina1.shunt_voltage)       
+    powerLevel2 = PowerLevel("Battery", ina2.bus_voltage, ina2.power, ina2.current, ina2.shunt_voltage)
+    powerLevel3 = PowerLevel("Solar", ina3.bus_voltage, ina3.power, ina3.current, ina3.shunt_voltage)
+    powerLevel4 = PowerLevel("Undefined", ina4.bus_voltage, ina4.power, ina4.current, ina4.shunt_voltage)
     
     i2c_bus.deinit()
     return powerLevel1, powerLevel2, powerLevel3, powerLevel4
@@ -98,16 +99,16 @@ def writeToCSV(data):
             
         if not fileExists:
             csv_writer.writerow(['date', 'time', 'connectionStatus', 'ip', 'uptime', 'temp', 'humidity',
-            'powerLevel1.title', 'powerLevel1.voltage', 'powerLevel1.power', 'data.powerLevel1.current',
-            'powerLevel2.title', 'powerLevel2.voltage', 'powerLevel2.power', 'data.powerLevel2.current',
-            'powerLevel3.title', 'powerLevel3.voltage', 'powerLevel3.power', 'data.powerLevel3.current',
-            'powerLevel4.title', 'powerLevel4.voltage', 'powerLevel4.power', 'data.powerLevel4.current'])
+            'powerLevel1.title', 'powerLevel1.voltage', 'powerLevel1.power', 'data.powerLevel1.current', 'data.powerLevel1.shunt_voltage',
+            'powerLevel2.title', 'powerLevel2.voltage', 'powerLevel2.power', 'data.powerLevel2.current', 'data.powerLevel2.shunt_voltage',
+            'powerLevel3.title', 'powerLevel3.voltage', 'powerLevel3.power', 'data.powerLevel3.current', 'data.powerLevel3.shunt_voltage',
+            'powerLevel4.title', 'powerLevel4.voltage', 'powerLevel4.power', 'data.powerLevel4.current', 'data.powerLevel4.shunt_voltage'])
 
         csv_writer.writerow([data.date, data.time, data.connectionStatus, data.ip, data.uptime, data.temp, data.humidity, 
-        data.powerLevel1.title, data.powerLevel1.voltage, data.powerLevel1.power, data.powerLevel1.current,
-        data.powerLevel2.title, data.powerLevel2.voltage, data.powerLevel2.power, data.powerLevel2.current,
-        data.powerLevel3.title, data.powerLevel3.voltage, data.powerLevel3.power, data.powerLevel3.current,
-        data.powerLevel4.title, data.powerLevel4.voltage, data.powerLevel4.power, data.powerLevel4.current])
+        data.powerLevel1.title, data.powerLevel1.voltage, data.powerLevel1.power, data.powerLevel1.current, data.powerLevel1.shunt_voltage,
+        data.powerLevel2.title, data.powerLevel2.voltage, data.powerLevel2.power, data.powerLevel2.current, data.powerLevel2.shunt_voltage,
+        data.powerLevel3.title, data.powerLevel3.voltage, data.powerLevel3.power, data.powerLevel3.current, data.powerLevel3.shunt_voltage,
+        data.powerLevel4.title, data.powerLevel4.voltage, data.powerLevel4.power, data.powerLevel4.current, data.powerLevel4.shunt_voltage])
 
 def sendDataToThingerIO(data):
     logging.info("send data to thinger.io")
@@ -125,25 +126,29 @@ def sendDataToThingerIO(data):
                 "title": data.powerLevel1.title,
                 "voltage": data.powerLevel1.voltage,
                 "power": data.powerLevel1.power,
-                "current": data.powerLevel1.current
+                "current": data.powerLevel1.current,
+                "shunt_voltage": data.powerLevel1.shunt_voltage
             },
             {
                 "title": data.powerLevel2.title,
                 "voltage": data.powerLevel2.voltage,
                 "power": data.powerLevel2.power,
-                "current": data.powerLevel2.current
+                "current": data.powerLevel2.current,
+                "shunt_voltage": data.powerLevel2.shunt_voltage
             },
             {
                 "title": data.powerLevel3.title,
                 "voltage": data.powerLevel3.voltage,
                 "power": data.powerLevel3.power,
-                "current": data.powerLevel3.current
+                "current": data.powerLevel3.current,
+                "shunt_voltage": data.powerLevel3.shunt_voltage
             },
             {
                 "title": data.powerLevel4.title,
                 "voltage": data.powerLevel4.voltage,
                 "power": data.powerLevel4.power,
-                "current": data.powerLevel4.current
+                "current": data.powerLevel4.current,
+                "shunt_voltage": data.powerLevel4.shunt_voltage
             }
         ]
     }

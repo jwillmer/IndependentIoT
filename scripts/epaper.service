@@ -4,7 +4,7 @@ After=network.target
 
 [Service] 
 ExecStart=/usr/bin/python3 -u updateScreen.py
-WorkingDirectory=/home/pi/scripts/scripts
+WorkingDirectory=/home/pi/IndependentPi/scripts
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
