@@ -55,7 +55,8 @@ def writePowerLevels(draw, title, voltage, power, current, shunt_voltage):
     titleValue = ""
 
     if title == "Battery":
-        percent = int(((voltage + shunt_voltage) * 100) - 320)
+        # Battery should not go under 3.7V so we use this as 0% 
+        percent = int(((voltage + shunt_voltage) * 100) - 370)
         percent = 0 if percent < 0 else percent 
         titleValue = "{0}%".format(percent)
 
