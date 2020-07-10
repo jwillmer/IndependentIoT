@@ -2,6 +2,9 @@
 
 The scripts are collecting data from IoT sensors and storing, displaying and sending it to a remote monitoring system. A detailed project description can be found at https://jwillmer.de/blog/projects/independent-iot-system-part-1
 
+![Electronics](/media/electronics.jpg)
+![Pin Layout](/media/pin-layout.jpg)
+
 ## Sensors
 
 - WeMos SHT30 Temp & Humidity Sensor
