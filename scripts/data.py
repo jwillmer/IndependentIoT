@@ -11,6 +11,8 @@ from smbus2 import SMBus
 from pathlib import Path
 import csv
 import requests
+from dotenv import load_dotenv
+load_dotenv(override=True)
 
 class PowerLevel:
     def __init__(self, title, voltage, power, current, shunt_voltage):
@@ -88,7 +90,9 @@ def getTempAndHumidityData():
     humidity = 100 * (data[3] * 256 + data[4]) / 65535.0
     return temp, humidity
 
-def writeToCSV(data):
+def writeToCSV(data):    
+    if not os.getenv("WRITE_TO_CSV"): return
+
     logging.info("write data to csv")
     fileName = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'sensor-data.csv') 
     csv_file = Path(fileName)
@@ -111,8 +115,10 @@ def writeToCSV(data):
         data.powerLevel4.title, data.powerLevel4.voltage, data.powerLevel4.power, data.powerLevel4.current, data.powerLevel4.shunt_voltage])
 
 def sendDataToThingerIO(data):
-    logging.info("send data to thinger.io")
-    endpoint = "https://backend.thinger.io/v3/users/jwillmer/devices/FreelancePi/callback/data"
+    if not os.getenv("THINGER_IO_ACTIVE"): return
+
+    logging.info("send data to thinger.io")   
+    endpoint = os.getenv("THINGER_IO_ENDPOINT")
     payload  = {
         "date": data.date,
         "time": data.time,
@@ -155,6 +161,6 @@ def sendDataToThingerIO(data):
     headers = {
         'Content-type': 'application/json', 
         'Accept': 'text/plain', 
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJEZXZpY2VDYWxsYmFja19GcmVlbGFuY2VQaSIsInVzciI6Imp3aWxsbWVyIn0.eMPRRFtBM3wa0m2wF5S3bxFs1pi-NEuGRWuWOswhqho'}
+        'Authorization': os.getenv("THINGER_IO_AUTH")}
     resp = requests.post(endpoint, json=payload , headers=headers)
     logging.debug("Thinger.io status code: {0}".format(resp.status_code))

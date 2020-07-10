@@ -1,5 +1,9 @@
 # Service Commands
 
+## Environment Configuration
+
+Copy the `.env.bak` file in the scripts folder and call it `.env`. Set the environment variables before running the scripts.
+
 ## ePaper Service
 
 Displays latest sensor data on ePaper. Is triggered by button press. Check that the path in the `epaper.service` is correct!
@@ -22,7 +26,3 @@ Collects sensor data and saves it to CSV and thinger.io. Check that the path is 
 crontab -e
 */15 * * * * /usr/bin/python3 -u /home/pi/IndependentPi/scripts/collectData.py
 ```
-
-### Thinger.io Configuration
-
-Make sure to replace the URL and header authentication in  `data.py > sendDataToThingerIO`
