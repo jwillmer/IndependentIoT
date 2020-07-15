@@ -15,7 +15,7 @@ import threading
 import time
 from signal import signal, SIGINT
 from data import Data
-
+from lipo import getLiPoPercentage
 
 #logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
@@ -53,15 +53,14 @@ def writeTitleInfo(draw, title, value = ""):
 def writePowerLevels(draw, title, voltage, power, current, shunt_voltage):
     global current_height
     titleValue = ""
+    volategeIn = voltage + shunt_voltage
 
     if title == "Battery":
-        # Battery should not go under 3.7V so we use this as 0% 
-        percent = int(((voltage + shunt_voltage) * 100) - 370)
-        percent = 0 if percent < 0 else percent 
+        percent = getLiPoPercentage(volategeIn) 
         titleValue = "{0}%".format(percent)
 
     writeTitleInfo(draw, title, titleValue)
-    writeInfo(draw, 'Voltage:', "{:4.3f}V".format(voltage))
+    writeInfo(draw, 'Voltage:', "{:4.3f}V".format(volategeIn))
     writeInfo(draw, 'Current:', "{:5.2f}mA".format(current))
     writeInfo(draw, 'Power:', "{:4.3f}W".format(power))
 
