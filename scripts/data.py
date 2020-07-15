@@ -31,7 +31,7 @@ class Data:
         self.timestamp = time.localtime()
         self.time = time.strftime('%H:%M:%S', self.timestamp)
         self.date = time.strftime("%Y-%m-%d", self.timestamp)
-        self.uptime = time.strftime('%H:%M:%S', time.localtime(uptime()))
+        self.uptime = time.strftime('%H:%M:%S', time.gmtime(uptime()))
         self.connectionStatus = isOnline()
         self.temp, self.humidity = getTempAndHumidityData()
 
