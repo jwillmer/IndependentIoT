@@ -1,15 +1,4 @@
-import logging
-import socket
-import time
 import traceback
-from contextlib import closing
-
-import board
-from adafruit_ina219 import INA219, ADCResolution, BusVoltageRange
-from smbus2 import SMBus
-from uptime import uptime
-
-
 class PowerLevel:
     def __init__(self, title, voltage, power, current, shunt_voltage):
         self.title = title
@@ -18,12 +7,13 @@ class PowerLevel:
         self.current = current
         self.shunt_voltage = shunt_voltage
 
-
 class Data:
-    def __init__(self):       
+    def __init__(self):     
+        import time
+        from uptime import uptime  
          # Get first power levels before we activate other sensors
         self.powerLevel1, self.powerLevel2, self.powerLevel3, self.powerLevel4 = getPowerLevels()
-        self.ip = socket.gethostbyname(socket.gethostname())
+        self.ip = getLocalIp()
         self.timestamp = time.localtime()
         self.time = time.strftime('%H:%M:%S', self.timestamp)
         self.date = time.strftime("%Y-%m-%d", self.timestamp)
@@ -31,7 +21,10 @@ class Data:
         self.connectionStatus = isOnline()
         self.temp, self.humidity = getTempAndHumidityData()
 
-def getPowerLevels():       
+def getPowerLevels():  
+    import board
+    from adafruit_ina219 import INA219, ADCResolution, BusVoltageRange
+
     dic = {
         0x40: "Pi",
         0x41: "Battery",
@@ -51,7 +44,13 @@ def getPowerLevels():
     i2c_bus.deinit()
 
 
+def getLocalIp():
+    import socket
+    return socket.gethostbyname(socket.gethostname())
+
 def check_socket(host, port):
+    import socket
+    from contextlib import closing
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
         if sock.connect_ex((host, port)) == 0:
             return 1
@@ -62,6 +61,8 @@ def isOnline():
     return "Connected" if check_socket('8.8.8.8', 53) else "Offline"          
 
 def getTempAndHumidityData():
+    import time
+    from smbus2 import SMBus
     SHT31_ADDRESS = 0x45
     bus = SMBus(1) 
     bus.write_i2c_block_data(SHT31_ADDRESS, 0x2C, [0x06])
