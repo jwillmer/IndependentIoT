@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-import sys
-import os
 import logging
-import time
-from data import Data, writeToCSV, sendDataToThingerIO
+
+from data import Data
+from utils import sendDataToThingerIO, writeToCSV
 
 #logging.basicConfig(level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s:%(levelname)s:%(message)s")
