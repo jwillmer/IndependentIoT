@@ -7,12 +7,18 @@ class PowerLevel:
         self.current = current
         self.shunt_voltage = shunt_voltage
 
+    def getLiPoBatteryLevel(self):
+        from lipo import getLiPoPercentage
+        volategeIn = self.voltage + self.shunt_voltage
+        return getLiPoPercentage(volategeIn)
+
 class Data:
     def __init__(self):     
         import time
-        from uptime import uptime  
+        from uptime import uptime        
          # Get first power levels before we activate other sensors
         self.powerLevel1, self.powerLevel2, self.powerLevel3, self.powerLevel4 = getPowerLevels()
+        self.BatteryLevel = self.powerLevel2.getLiPoBatteryLevel() # battery measurement on powerLevel2
         self.ip = getLocalIp()
         self.timestamp = time.localtime()
         self.time = time.strftime('%H:%M:%S', self.timestamp)
@@ -20,6 +26,7 @@ class Data:
         self.uptime = time.strftime('%H:%M:%S', time.gmtime(uptime()))
         self.connectionStatus = isOnline()
         self.temp, self.humidity = getTempAndHumidityData()
+ 
 
 def getPowerLevels():  
     import board

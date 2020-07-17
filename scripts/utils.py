@@ -20,13 +20,13 @@ def writeToCSV(data):
         csv_writer = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             
         if not fileExists:
-            csv_writer.writerow(['date', 'time', 'connectionStatus', 'ip', 'uptime', 'temp', 'humidity',
+            csv_writer.writerow(['date', 'time', 'connectionStatus', 'ip', 'uptime', 'temp', 'humidity', 'batteryLevel',
             'powerLevel1.title', 'powerLevel1.voltage', 'powerLevel1.power', 'data.powerLevel1.current', 'data.powerLevel1.shunt_voltage',
             'powerLevel2.title', 'powerLevel2.voltage', 'powerLevel2.power', 'data.powerLevel2.current', 'data.powerLevel2.shunt_voltage',
             'powerLevel3.title', 'powerLevel3.voltage', 'powerLevel3.power', 'data.powerLevel3.current', 'data.powerLevel3.shunt_voltage',
             'powerLevel4.title', 'powerLevel4.voltage', 'powerLevel4.power', 'data.powerLevel4.current', 'data.powerLevel4.shunt_voltage'])
 
-        csv_writer.writerow([data.date, data.time, data.connectionStatus, data.ip, data.uptime, data.temp, data.humidity, 
+        csv_writer.writerow([data.date, data.time, data.connectionStatus, data.ip, data.uptime, data.temp, data.humidity, data.BatteryLevel, 
         data.powerLevel1.title, data.powerLevel1.voltage, data.powerLevel1.power, data.powerLevel1.current, data.powerLevel1.shunt_voltage,
         data.powerLevel2.title, data.powerLevel2.voltage, data.powerLevel2.power, data.powerLevel2.current, data.powerLevel2.shunt_voltage,
         data.powerLevel3.title, data.powerLevel3.voltage, data.powerLevel3.power, data.powerLevel3.current, data.powerLevel3.shunt_voltage,
@@ -45,6 +45,7 @@ def sendDataToThingerIO(data):
         "uptime": data.uptime,
         "temp": data.temp,
         "humidity": data.humidity,
+        "battery": data.BatteryLevel,
         "powerLevels": [
             {
                 "title": data.powerLevel1.title,
@@ -82,3 +83,10 @@ def sendDataToThingerIO(data):
         'Authorization': os.getenv("THINGER_IO_AUTH")}
     resp = requests.post(endpoint, json=payload , headers=headers)
     logging.debug("Thinger.io status code: {0}".format(resp.status_code))
+
+def shutdown():
+    command = "/usr/bin/sudo /sbin/shutdown now"
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    logging.debug(output)
