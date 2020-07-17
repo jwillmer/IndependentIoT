@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import logging
-
 from data import Data
 from utils import sendDataToThingerIO, writeToCSV
 

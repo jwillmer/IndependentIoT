@@ -6,11 +6,9 @@ from contextlib import closing
 
 import board
 from adafruit_ina219 import INA219, ADCResolution, BusVoltageRange
-from dotenv import load_dotenv
 from smbus2 import SMBus
 from uptime import uptime
 
-load_dotenv(override=True)
 
 class PowerLevel:
     def __init__(self, title, voltage, power, current, shunt_voltage):

@@ -4,7 +4,9 @@ import os
 from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
 
+load_dotenv(override=True)
 
 def writeToCSV(data):    
     if not os.getenv("WRITE_TO_CSV"): return
